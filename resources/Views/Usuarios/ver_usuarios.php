@@ -51,7 +51,7 @@ include '../../../app/Controller/Principal/footer.php';
 <script>
     $(document).ready(function() {
         $.ajax({
-            url: '/Cotizador/app/Controller/Cotizaciones/cotizacion_consulta.php',
+            url: '/Cotizador/app/Controller/Usuarios/usuarios_consulta.php',
             method: 'GET',
             success: function(response) {
                 // Insertar el contenido recibido dentro del tbody

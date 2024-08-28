@@ -2,6 +2,8 @@
 // Incluir el archivo del menú
 include '../../../app/Controller/Principal/menu.php';
 
+//echo $id;
+
 ?>
 
 <div class="container-fluid">
@@ -49,7 +51,7 @@ include '../../../app/Controller/Principal/menu.php';
                                 <div class="col-lg-4">
                                     <div class="form-group" style="padding-bottom: 5px;">
                                         <p>Contraseña</p>
-                                        <input type="password" class="form-control form-control-user" id="contra" name="contra" placeholder="Contraseña" required autocomplete="new-password" title="Crea una contraseña segura">
+                                        <input type="password" class="form-control form-control-user" id="contra" name="contra" placeholder="Contraseña" required autocomplete="new-password" title="Crea una contrasea segura">
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -62,18 +64,20 @@ include '../../../app/Controller/Principal/menu.php';
                                     <div class="form-group" style="padding-bottom: 5px;">
                                         <p>Rol</p>
                                         <select class="form-control form-control-user" id="rol" name="rol" required title="Selecciona el rol de usuario">
-                                            <option value="" disabled selected>-- Seleccionar un rol --</option>
-                                            <option value="1">Administrador</option>
-                                            <option value="2">Usuario</option>
-                                            <option value="3">Invitado</option>
-                                            <!-- Puedes agregar más opciones según lo que necesites -->
+                                            <?php echo $options; ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group" style="padding-bottom: 5px;">
+                                        <input type="hidden" class="form-control form-control-user" id="usuario_alta" name="usuario_alta" placeholder="" value="<?php echo $id; ?>" required>
+
                                     </div>
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-user btn-block">
-                                Registrar usuariox|
+                                Registrar usuario
                             </button>
                         </form>
 
@@ -87,10 +91,55 @@ include '../../../app/Controller/Principal/menu.php';
 </div>
 
 
-
-
 <?php
 // Incluir el archivo del menú
 include '../../../app/Controller/Principal/footer.php';
 
 ?>
+
+<script>
+    $(document).ready(function() {
+        $('#registerForm').on('submit', function(event) {
+            event.preventDefault(); // Evitar el envío del formulario por defecto
+
+            // Recopilar los datos del formulario
+            var formData = {
+                nombre: $('#nombre').val(),
+                apellido: $('#apellido').val(),
+                email: $('#email').val(),
+                contra: $('#contra').val(),
+                contra_confirmar: $('#contra_confirmar').val(),
+                rol: $('#rol').val()
+            };
+
+            // Enviar los datos a través de AJAX
+            $.ajax({
+                    type: 'POST',
+                    url: '/Cotizador/app/Controller/Usuarios/usuarios_registro.php', // Ruta al archivo PHP que manejará el registro
+                    data: formData,
+                    dataType: 'json',
+                    encode: true
+                })
+                .done(function(data) {
+                    try {
+                        if (data.success) {
+                            $('#responseMessage').html('<div class="alert alert-success">' + data.message + '</div>');
+                            $('#registerForm')[0].reset(); // Reiniciar el formulario
+                        } else {
+                            $('#responseMessage').html('<div class="alert alert-danger">' + data.message + '</div>');
+                        }
+                    } catch (e) {
+                        $('#responseMessage').html('<div class="alert alert-danger">Error en la respuesta: ' + e.message + '</div>');
+                        console.log(data); // Mostrar la respuesta en la consola para depuración
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    // Manejar errores de AJAX
+                    $('#responseMessage').html('<div class="alert alert-danger">Ocurrió un error: ' + error + '</div>');
+                });
+        });
+    });
+</script>
+
+
+</html>

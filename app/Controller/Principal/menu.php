@@ -12,7 +12,7 @@ $apellidos = "";
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         //echo "ID: " . $row["id"] . " - Nombre: " . $row["nombre"] . " - Email: " . $row["email"] . "<br>";
-
+        $id = $row["id"];
         $nombre = $row["nombre"];
         $apellidos = $row["apellidos"];
 
