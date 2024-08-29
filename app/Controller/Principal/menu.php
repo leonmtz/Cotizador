@@ -30,6 +30,9 @@ if ($result->num_rows > 0) {
 
 $stmt->close();
 $conn->close();
+$current_page = basename($_SERVER['PHP_SELF']);
+
+
 ?>
 
 <head>
@@ -52,15 +55,17 @@ $conn->close();
 </head>
 
 <style>
+    .nav-item.active .nav-link {
+        background-color: #4e73df;
+        /* Color de fondo para el elemento activo */
+        color: #ffffff;
+        /* Color del texto para el elemento activo */
+    }
 
-.nav-item.active .nav-link {
-    background-color: #4e73df; /* Color de fondo para el elemento activo */
-    color: #ffffff; /* Color del texto para el elemento activo */
-}
-.collapse-item.active {
-    background-color: #d1d3e2; /* Color de fondo para los elementos activos en la sublista */
-}
-
+    .collapse-item.active {
+        background-color: #d1d3e2;
+        /* Color de fondo para los elementos activos en la sublista */
+    }
 </style>
 
 <body id="page-top">
@@ -83,10 +88,11 @@ $conn->close();
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
+            <li class="nav-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
                 <a class="nav-link" href="/Cotizador/resources/index.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                    <span>Dashboard</span>
+                </a>
             </li>
 
             <!-- Divider -->
@@ -98,20 +104,19 @@ $conn->close();
             </div> -->
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item <?php echo ($current_page == 'ver_cotizaciones.php' || $current_page == 'realizar_cotizaciones.php') ? 'active' : ''; ?>">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-file-alt"></i>
                     <span>Cotizaciones</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="collapseTwo" class="collapse <?php echo ($current_page == 'ver_cotizaciones.php' || $current_page == 'realizar_cotizaciones.php') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Cotizaciones/ver_cotizaciones.php">Ver Cotizaciones</a>
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Cotizaciones/realizar_cotizaciones.php">Realizar Cotizacion</a>
+                        <a class="collapse-item <?php echo ($current_page == 'ver_cotizaciones.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Cotizaciones/ver_cotizaciones.php">Ver Cotizaciones</a>
+                        <a class="collapse-item <?php echo ($current_page == 'realizar_cotizaciones.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Cotizaciones/realizar_cotizaciones.php">Realizar Cotizacion</a>
                     </div>
                 </div>
             </li>
-
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -121,21 +126,20 @@ $conn->close();
                 Administración
             </div>
 
-            <li class="nav-item">
+            <li class="nav-item <?php echo ($current_page == 'ver_usuarios.php' || $current_page == 'registrar_usuarios.php' || $current_page == 'mi_perfil.php') ? 'active' : ''; ?>">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
                     <span>Usuarios</span>
                 </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div id="collapsePages" class="collapse <?php echo ($current_page == 'ver_usuarios.php' || $current_page == 'registrar_usuarios.php' || $current_page == 'mi_perfil.php') ? 'show' : ''; ?>" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Usuarios/ver_usuarios.php">Ver Usuarios</a>
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Usuarios/registrar_usuarios.php">Registrar Usuario</a>
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Usuarios/mi_perfil.php">Ver mi Pérfil</a>
+                        <a class="collapse-item <?php echo ($current_page == 'ver_usuarios.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Usuarios/ver_usuarios.php">Ver Usuarios</a>
+                        <a class="collapse-item <?php echo ($current_page == 'registrar_usuarios.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Usuarios/registrar_usuarios.php">Registrar Usuario</a>
+                        <a class="collapse-item <?php echo ($current_page == 'mi_perfil.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Usuarios/mi_perfil.php">Ver mi Pérfil</a>
                     </div>
                 </div>
             </li>
-
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
