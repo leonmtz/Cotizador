@@ -1,10 +1,12 @@
 <?php
 // Incluir el archivo del menú
 include '../../../app/Controller/Principal/menu.php';
+include '../../../app/Controller/Usuarios/usuarios_roles.php';
 
 //echo $id;
 
 ?>
+
 
 <div class="container-fluid">
 
@@ -70,8 +72,7 @@ include '../../../app/Controller/Principal/menu.php';
                                 </div>
                                 <div class="col-lg-12">
                                     <div class="form-group" style="padding-bottom: 5px;">
-                                        <input type="hidden" class="form-control form-control-user" id="usuario_alta" name="usuario_alta" placeholder="" value="<?php echo $id; ?>" required>
-
+                                        <input type="hidden" class="form-control form-control-user" id="usuario_alta" name="usuario_alta" placeholder="" value="<?php echo $id; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -102,40 +103,42 @@ include '../../../app/Controller/Principal/footer.php';
         $('#registerForm').on('submit', function(event) {
             event.preventDefault(); // Evitar el envío del formulario por defecto
 
-            // Recopilar los datos del formulario
             var formData = {
                 nombre: $('#nombre').val(),
                 apellido: $('#apellido').val(),
                 email: $('#email').val(),
                 contra: $('#contra').val(),
                 contra_confirmar: $('#contra_confirmar').val(),
-                rol: $('#rol').val()
+                rol: $('#rol').val(),
+                usuario_alta: $('#usuario_alta').val() 
             };
 
             // Enviar los datos a través de AJAX
             $.ajax({
                     type: 'POST',
-                    url: '/Cotizador/app/Controller/Usuarios/usuarios_registro.php', // Ruta al archivo PHP que manejará el registro
+                    url: '/Cotizador/app/Controller/Usuarios/usuarios_registro.php', 
                     data: formData,
                     dataType: 'json',
                     encode: true
                 })
                 .done(function(data) {
+                    console.log("Respuesta del servidor:", data);
                     try {
                         if (data.success) {
                             $('#responseMessage').html('<div class="alert alert-success">' + data.message + '</div>');
-                            $('#registerForm')[0].reset(); // Reiniciar el formulario
+                            $('#registerForm')[0].reset(); 
                         } else {
                             $('#responseMessage').html('<div class="alert alert-danger">' + data.message + '</div>');
                         }
                     } catch (e) {
                         $('#responseMessage').html('<div class="alert alert-danger">Error en la respuesta: ' + e.message + '</div>');
-                        console.log(data); // Mostrar la respuesta en la consola para depuración
+                        console.log("Error al procesar la respuesta:", data); 
                     }
                 })
                 .fail(function(xhr, status, error) {
                     // Manejar errores de AJAX
                     $('#responseMessage').html('<div class="alert alert-danger">Ocurrió un error: ' + error + '</div>');
+                    console.log("Error de AJAX:", xhr.responseText); 
                 });
         });
     });

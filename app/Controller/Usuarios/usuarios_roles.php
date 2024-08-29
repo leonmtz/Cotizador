@@ -1,8 +1,8 @@
 <?php
 // Archivo: usuarios_roles.php
 
-session_start();
-include '../config.php';
+//session_start();
+//include '../config.php';
 // Crear conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -20,11 +20,15 @@ $options = '<option value="" disabled selected>-- Seleccionar un rol --</option>
 if ($result->num_rows > 0) {
     // Generar options para cada rol
     while($row = $result->fetch_assoc()) {
-        $options .= '<option value="' . $row['id'] . '">' . $row['nombre'] . '</option>';
+        $options .= '<option value="' . $row['id'] . '">' . $row['rol'] . '</option>';
+        
+        //echo $options;
     }
 } else {
     $options .= '<option value="" disabled>No hay roles disponibles</option>';
 }
+
+//echo $options;
 
 $conn->close();
 ?>

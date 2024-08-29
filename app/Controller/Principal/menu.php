@@ -1,26 +1,34 @@
-<?php 
+<?php
 include 'config.php';  // Sube un nivel y luego incluye config.php desde Controller
 
 session_start();
 
-$sql = "SELECT id, nombre, apellidos, email FROM users";
-$result = $conn->query($sql);
+if (!isset($_SESSION['email'])) {
+    die("No estás registrado.");
+}
 
+$email = $_SESSION['email']; // Obtén el correo electrónico del usuario desde la sesión
 
+$sql = "SELECT id, nombre, apellidos, email FROM users WHERE email = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$id = "";
 $nombre = "";
 $apellidos = "";
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        //echo "ID: " . $row["id"] . " - Nombre: " . $row["nombre"] . " - Email: " . $row["email"] . "<br>";
         $id = $row["id"];
         $nombre = $row["nombre"];
         $apellidos = $row["apellidos"];
-
     }
 } else {
     echo "No se encontraron resultados.";
 }
 
+$stmt->close();
 $conn->close();
 ?>
 
@@ -42,6 +50,18 @@ $conn->close();
 
 
 </head>
+
+<style>
+
+.nav-item.active .nav-link {
+    background-color: #4e73df; /* Color de fondo para el elemento activo */
+    color: #ffffff; /* Color del texto para el elemento activo */
+}
+.collapse-item.active {
+    background-color: #d1d3e2; /* Color de fondo para los elementos activos en la sublista */
+}
+
+</style>
 
 <body id="page-top">
 
@@ -187,7 +207,7 @@ $conn->close();
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $nombre." ".$apellidos ?></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $nombre . " " . $apellidos ?></span>
                                 <img class="img-profile rounded-circle"
                                     src="/Cotizador/img/undraw_profile.svg">
                             </a>
@@ -209,7 +229,7 @@ $conn->close();
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
+                                    Cerrar Sesion
                                 </a>
                             </div>
                         </li>
@@ -217,5 +237,3 @@ $conn->close();
                     </ul>
 
                 </nav>
-
-

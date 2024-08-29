@@ -16,7 +16,7 @@
             <div class="modal-body">¿Estas seguro que quieres cerrar sesion?</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">No</button>
-                <a class="btn btn-primary" href="login.html">Cerrar Sesion</a>
+                <a class="btn btn-primary" href="/Cotizador/app/Controller/Usuarios/usuarios_logout.php">Cerrar Sesion</a>
             </div>
         </div>
     </div>

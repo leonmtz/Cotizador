@@ -3,6 +3,10 @@
 session_start();
 include '../config.php';
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Crear la conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -29,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Validar otros campos si es necesario...
-    if (empty($nombre) || empty($apellido) || empty($email) || empty($contra) || empty($rol) || empty($usuario_alta)) {
+    // Validar otros campos
+    if (empty($nombre) || empty($apellido) || empty($email) || empty($contra) || empty($contra_confirmar) || empty($rol) || empty($usuario_alta)) {
         $response['message'] = 'Todos los campos son obligatorios.';
         echo json_encode($response);
         exit();
@@ -38,9 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Encriptar la contraseña
     $hashedPassword = password_hash($contra, PASSWORD_BCRYPT);
+    $hashedPasswordConfirm = password_hash($contra_confirmar, PASSWORD_BCRYPT);
 
     // Inserción en la base de datos
-    $sql = "INSERT INTO users (nombre, apellidos, email, password, id_rol, alta_usuario, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, now())";
+    $sql = "INSERT INTO users (nombre, apellidos, email, password, confirm_password, id_rol, alta_usuario, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, ?, now())";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -49,13 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    $stmt->bind_param("ssssi", $nombre, $apellido, $email, $hashedPassword, $rol, $usuario_alta);
+    $stmt->bind_param("sssssii", $nombre, $apellido, $email, $hashedPassword, $hashedPasswordConfirm, $rol, $usuario_alta);
 
     if ($stmt->execute()) {
         $response['success'] = true;
         $response['message'] = 'Usuario registrado exitosamente.';
     } else {
         $response['message'] = 'Error al ejecutar la consulta: ' . $stmt->error;
+        // Agregar registro de errores en la base de datos si es necesario
     }
 
     $stmt->close();
@@ -67,4 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $conn->close();
 
 echo json_encode($response);
+
+
+
 ?>

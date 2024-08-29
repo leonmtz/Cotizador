@@ -28,6 +28,8 @@ include '../../../app/Controller/Principal/menu.php';
                             <th>Nombre</th>
                             <th>Apellidos</th>
                             <th>Correo</th>
+                            <th>Usuario Alta</th>
+                            <th>Rol</th>
                             <th>Fecha de Registro</th>
                         </tr>
                     </thead>
