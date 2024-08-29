@@ -1,27 +1,38 @@
-<?php 
+<?php
 include 'config.php';  // Sube un nivel y luego incluye config.php desde Controller
 
 session_start();
 
-$sql = "SELECT id, nombre, apellidos, email FROM users";
-$result = $conn->query($sql);
+if (!isset($_SESSION['email'])) {
+    die("No estás registrado.");
+}
 
+$email = $_SESSION['email']; // Obtén el correo electrónico del usuario desde la sesión
 
+$sql = "SELECT id, nombre, apellidos, email FROM users WHERE email = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$id = "";
 $nombre = "";
 $apellidos = "";
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        //echo "ID: " . $row["id"] . " - Nombre: " . $row["nombre"] . " - Email: " . $row["email"] . "<br>";
-
+        $id = $row["id"];
         $nombre = $row["nombre"];
         $apellidos = $row["apellidos"];
-
     }
 } else {
     echo "No se encontraron resultados.";
 }
 
+$stmt->close();
 $conn->close();
+$current_page = basename($_SERVER['PHP_SELF']);
+
+
 ?>
 
 <head>
@@ -38,9 +49,24 @@ $conn->close();
     <link href="/Cotizador/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="/Cotizador/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="/Cotizador/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
 
 </head>
+
+<style>
+    .nav-item.active .nav-link {
+        background-color: #4e73df;
+        /* Color de fondo para el elemento activo */
+        color: #ffffff;
+        /* Color del texto para el elemento activo */
+    }
+
+    .collapse-item.active {
+        background-color: #d1d3e2;
+        /* Color de fondo para los elementos activos en la sublista */
+    }
+</style>
 
 <body id="page-top">
 
@@ -62,10 +88,11 @@ $conn->close();
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
+            <li class="nav-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
                 <a class="nav-link" href="/Cotizador/resources/index.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                    <span>Dashboard</span>
+                </a>
             </li>
 
             <!-- Divider -->
@@ -77,20 +104,19 @@ $conn->close();
             </div> -->
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item <?php echo ($current_page == 'ver_cotizaciones.php' || $current_page == 'realizar_cotizaciones.php') ? 'active' : ''; ?>">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-file-alt"></i>
                     <span>Cotizaciones</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="collapseTwo" class="collapse <?php echo ($current_page == 'ver_cotizaciones.php' || $current_page == 'realizar_cotizaciones.php') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Cotizaciones/ver_cotizaciones.php">Ver Cotizaciones</a>
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Cotizaciones/realizar_cotizaciones.php">Realizar Cotizacion</a>
+                        <a class="collapse-item <?php echo ($current_page == 'ver_cotizaciones.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Cotizaciones/ver_cotizaciones.php">Ver Cotizaciones</a>
+                        <a class="collapse-item <?php echo ($current_page == 'realizar_cotizaciones.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Cotizaciones/realizar_cotizaciones.php">Realizar Cotizacion</a>
                     </div>
                 </div>
             </li>
-
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -100,21 +126,20 @@ $conn->close();
                 Administración
             </div>
 
-            <li class="nav-item">
+            <li class="nav-item <?php echo ($current_page == 'ver_usuarios.php' || $current_page == 'registrar_usuarios.php' || $current_page == 'mi_perfil.php') ? 'active' : ''; ?>">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
                     <span>Usuarios</span>
                 </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div id="collapsePages" class="collapse <?php echo ($current_page == 'ver_usuarios.php' || $current_page == 'registrar_usuarios.php' || $current_page == 'mi_perfil.php') ? 'show' : ''; ?>" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Usuarios/ver_usuarios.php">Ver Usuarios</a>
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Usuarios/registrar_usuarios.php">Registrar Usuario</a>
-                        <a class="collapse-item" href="/Cotizador/resources/Views/Usuarios/mi_perfil.php">Ver mi Pérfil</a>
+                        <a class="collapse-item <?php echo ($current_page == 'ver_usuarios.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Usuarios/ver_usuarios.php">Ver Usuarios</a>
+                        <a class="collapse-item <?php echo ($current_page == 'registrar_usuarios.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Usuarios/registrar_usuarios.php">Registrar Usuario</a>
+                        <a class="collapse-item <?php echo ($current_page == 'mi_perfil.php') ? 'active' : ''; ?>" href="/Cotizador/resources/Views/Usuarios/mi_perfil.php">Ver mi Pérfil</a>
                     </div>
                 </div>
             </li>
-
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -186,7 +211,7 @@ $conn->close();
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $nombre." ".$apellidos ?></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $nombre . " " . $apellidos ?></span>
                                 <img class="img-profile rounded-circle"
                                     src="/Cotizador/img/undraw_profile.svg">
                             </a>
@@ -208,7 +233,7 @@ $conn->close();
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
+                                    Cerrar Sesion
                                 </a>
                             </div>
                         </li>
@@ -216,5 +241,3 @@ $conn->close();
                     </ul>
 
                 </nav>
-
-
